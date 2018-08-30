@@ -14,6 +14,8 @@ log4j中既有threadLocal，又有MDC/NDC，MDC/NDC应该是基于threadLocal实
 
 Spring MVC结合日志框架给一次请求日志打印出唯一标示： https://blog.csdn.net/helloworldwt/article/details/51818309 这个链接是重写PatternParser来实现的，综合上述可知，要想添加logid，一是拦截所有请求并添加threadLocal，另一个是parser里的模式解析。
 
+也可以使用spring的拦截器来实现。
+
 2、log4j本身也可以配置logid来标记唯一请求，与上面有什么差别呢？
 
 log4j本身配置的logid比较简单，可能并不能满足复杂的业务的需求。
