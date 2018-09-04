@@ -1,0 +1,22 @@
+1、为服务器端生成数字证书和保存它使用的证书仓库：
+keytool -genkey -v -alias bluedash-ssl-demo-server -keyalg RSA -keystore ./server_ks -dname "CN=localhost,OU=cn,O=cn,L=cn,ST=cn,C=cn" -storepass server -keypass 123123
+这样，我们就将服务端证书bluedash-ssl-demo-server保存在了server_ksy这个store文件当中
+
+2、要生成一个客户端的证书仓库，因为keytool不能仅生成一个空白仓库，所以和服务端一样，我们还是生成一个证书加一个仓库（客户端证书加仓库）：
+keytool -genkey -v -alias bluedash-ssl-demo-client -keyalg RSA -keystore ./client_ks -dname "CN=localhost,OU=cn,O=cn,L=cn,ST=cn,C=cn" -storepass client -keypass 456456
+
+3、把服务器端的证书导出来，并导入到客户端的仓库。
+第一步：导出服务器端的证书：
+keytool -export -alias bluedash-ssl-demo-server -keystore ./server_ks -file server_key.cer
+这里要输入密码，密码为：server
+第二步：把导出的服务器端的证书输入到客户端的证书仓库中：
+keytool -import -trustcacerts -alias bluedash-ssl-demo-server -file ./server_key.cer -keystore ./client_ks
+输入密码：client，在回答是否信任此证书时，别的机器上输入的是"yes"，而我这里竟然要输入"是"。
+
+4、类似于第3步，如果在服务器端开启了双向验证：
+((SSLServerSocket) _socket).setNeedClientAuth(true);
+则需要把客户端的证书导入到服务器端的证书仓库中：
+keytool -export -alias bluedash-ssl-demo-client -keystore ./client_ks -file client_key.cer
+密码为：client
+keytool -import -trustcacerts -alias bluedash-ssl-demo-client -file ./client_key.cer -keystore ./server_ks
+密码为：server，并且要输入"是"。
