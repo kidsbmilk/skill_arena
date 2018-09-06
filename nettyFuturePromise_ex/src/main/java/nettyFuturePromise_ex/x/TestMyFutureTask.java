@@ -37,16 +37,18 @@ public class TestMyFutureTask extends MyFutureTask<Integer> {
         });
         thread3.setName("get3");
 
-        thread1.start();
         thread2.start();
+//        testMyFutureTask.cancel(false);
         thread3.start();
+        thread1.start();
     }
 
     @Override
     public java.lang.Integer call() throws Exception {
         int a = 1;
         int b = 3;
-        Thread.sleep(100);
+        System.out.println("sleep ...");
+        Thread.sleep(5000);
         return a + b;
     }
 }

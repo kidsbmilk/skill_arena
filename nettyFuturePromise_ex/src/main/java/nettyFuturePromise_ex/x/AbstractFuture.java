@@ -6,9 +6,7 @@ import java.util.concurrent.*;
 public abstract class AbstractFuture<V> implements IFuture<V>, Callable<V> {
 
     private volatile Object result; // 保证多线程的可见性
-
-    protected Collection<IFutureListener<V>> listeners = new CopyOnWriteArrayList<IFutureListener<V>>();
-
+    private Collection<IFutureListener<V>> listeners = new CopyOnWriteArrayList<IFutureListener<V>>();
     private static final SuccessSignal SUCCESS_SIGNAL = new SuccessSignal();
 
     @Override
@@ -117,7 +115,7 @@ public abstract class AbstractFuture<V> implements IFuture<V>, Callable<V> {
             if(isDone()) {
                 return false;
             }
-            result = new RuntimeException("主动取消");
+            result = new CauseHolder(new CancellationException("主动取消"));
             notifyAll();
         }
         notifyListeners();
@@ -136,6 +134,7 @@ public abstract class AbstractFuture<V> implements IFuture<V>, Callable<V> {
 
     @Override
     public V get() throws InterruptedException, ExecutionException {
+        System.out.println(Thread.currentThread().getName());
         await();
         Throwable cause = cause();
         if(cause == null) {
