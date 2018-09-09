@@ -20,6 +20,8 @@ public class OutboundHandler1 extends ChannelOutboundHandlerAdapter {
         // flush之后，msg对象会被释放，所以要提前保存str。
         if(str.equals("close")) {
             ctx.close();
+            System.out.println("close server");
+            HelloServer.bindFuture.channel().close();
         }
     }
 }

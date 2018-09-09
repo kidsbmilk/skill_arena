@@ -7,7 +7,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
+/**
+ * 详解Netty的优雅退出机制和原理：http://www.52im.net/thread-348-1-1.html
+ */
 public class HelloServer {
+    public static ChannelFuture bindFuture;
     public void start(int port) throws Exception {
         EventLoopGroup bossGroup = new NioEventLoopGroup(1);
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -28,8 +32,10 @@ public class HelloServer {
                         }
                     }).option(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture f = b.bind(port).sync();
+            bindFuture = f;
             f.channel().closeFuture().sync();
         } finally {
+            System.out.println("close group");
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
