@@ -10,6 +10,11 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * CustomCacheResolver是生成命名空间的，以类名.方法名.超时时间来生成，可能会有重载的方法缓存在同一个命名空间里。
+ * 而CustomKeyGenerator里是生成命名空间中的键值对的键的，是具体对象缓存时的键，如果以用户id来参与生成的话，可以做到用户缓存隔离。
+ * 上次我以随机值来参与生成CustomKeyGenerator了，导致每次请求时都是不同的键，当然得不到想要的缓存数据了，而且每次都会缓存一个新的。
+ */
 @Slf4j
 public class CustomCacheResolver extends AbstractCacheResolver {
 
