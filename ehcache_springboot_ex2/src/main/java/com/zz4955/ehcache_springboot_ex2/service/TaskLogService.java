@@ -1,18 +1,24 @@
-package com.zz4955.ehcache_springboot_ex.service;
+package com.zz4955.ehcache_springboot_ex2.service;
 
-import com.zz4955.ehcache_springboot_ex.bean.Tasklog;
-import com.zz4955.ehcache_springboot_ex.mapper.TaskLogMapper;
-import net.sf.ehcache.Cache;
+import com.zz4955.ehcache_springboot_ex2.annotation.LocalCache;
+import com.zz4955.ehcache_springboot_ex2.bean.Tasklog;
+import com.zz4955.ehcache_springboot_ex2.ehcache.CustomEhCacheCacheManager;
+import com.zz4955.ehcache_springboot_ex2.ehcache.LocalCacheConfiguration;
+import com.zz4955.ehcache_springboot_ex2.mapper.TaskLogMapper;
+import com.zz4955.ehcache_springboot_ex2.tool.CommonUtils;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.ehcache.EhCacheCache;
+import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 
 @Service
 public class TaskLogService {
@@ -21,12 +27,14 @@ public class TaskLogService {
     private TaskLogMapper taskLogMapper;
 
     @Autowired
-    private net.sf.ehcache.CacheManager cacheManager;
+    private LocalCacheConfiguration localCacheConfiguration;
+
+    private EhCacheCacheManager ehCacheCacheManager;
 
     /**
      * 缓存的key
      */
-    public static final String CACHE_KEY = "taskLog"; // 这个CACHE_KEY只是个命名空间，在这个空间中，有多个key-value的键值对。
+    public static final String CACHE_KEY = "cacheBeanName";
 
     /**
      * 添加tasklog
@@ -34,7 +42,8 @@ public class TaskLogService {
      * @param tasklog
      * @return
      */
-    @CachePut(value = CACHE_KEY, key = "#tasklog.id")
+    @LocalCache(expire = 20L)
+//    @CachePut(value = CACHE_KEY, key = "#tasklog.id")
     public Tasklog create(Tasklog tasklog) {
         System.out.println("CREATE");
         System.out.println(tasklog);
@@ -48,11 +57,16 @@ public class TaskLogService {
      * @param id
      * @return
      */
-    @Cacheable(value = CACHE_KEY, key = "#id") // 这个CACHE_KEY只是个命名空间，在这个空间中，有多个key-value的键值对。
+    @LocalCache(expire = 5L)
+//    @Cacheable(value = CACHE_KEY, key = "#id")
     public Tasklog findById(String id) {
         System.out.println("FINDBYID");
         System.out.println("ID:" + id);
         return taskLogMapper.selectById(id);
+    }
+
+    public TaskLogService() {
+        super();
     }
 
     /**
@@ -61,7 +75,8 @@ public class TaskLogService {
      * @param tasklog
      * @return
      */
-    @CachePut(value = CACHE_KEY, key = "#tasklog.id") // 这个CACHE_KEY只是个命名空间，在这个空间中，有多个key-value的键值对。
+    @LocalCache(expire = 5L)
+//    @CachePut(value = CACHE_KEY, key = "#tasklog.id")
     public Tasklog update(Tasklog tasklog) {
         System.out.println("UPDATE");
         System.out.println(tasklog);
@@ -77,7 +92,7 @@ public class TaskLogService {
      *
      * @param id
      */
-    @CacheEvict(value = CACHE_KEY, key = "#id") // 这个CACHE_KEY只是个命名空间，在这个空间中，有多个key-value的键值对。
+//    @CacheEvict(value = CACHE_KEY, key = "#id")
     public void delete(String id) {
         System.out.println("DELETE");
         System.out.println("ID:" + id);
@@ -85,15 +100,23 @@ public class TaskLogService {
     }
 
 
+    /**
+     * LocalCache创建了很多命名空间：这里需要得到所有命名空间中的键值对。
+     */
     public void getCache() {
         System.out.println("GETCACHE");
-        Cache cache = cacheManager.getCache(CACHE_KEY); // 这个CACHE_KEY只是个命名空间，在这个空间中，有多个key-value的键值对。
-        String[] names = cacheManager.getCacheNames();
-        Map<Object, Element> elements = cache.getAll(cache.getKeys());
-        if (elements != null) {
-            for (Map.Entry<Object, Element> entry : elements.entrySet()) {
-                System.out.println("key= " + entry.getValue().getObjectKey());
-                System.out.println("value= " + entry.getValue().getObjectValue());
+        ehCacheCacheManager = localCacheConfiguration.ehCacheCacheManager();
+        List<String> names = new ArrayList<>();
+        names.addAll(ehCacheCacheManager.getCacheNames());
+        Map<String, Ehcache> ehcacheMap = ((CustomEhCacheCacheManager)ehCacheCacheManager).getNamespaceCacheMap();
+        for(String key : ehcacheMap.keySet()) {
+            Ehcache cache = ehcacheMap.get(key);
+            Map<Object, Element> elements = cache.getAll(cache.getKeys());
+            if (elements != null) {
+                for (Map.Entry<Object, Element> entry : elements.entrySet()) {
+                    System.out.println("key= " + entry.getValue().getObjectKey());
+                    System.out.println("value= " + entry.getValue().getObjectValue());
+                }
             }
         }
     }

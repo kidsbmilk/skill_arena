@@ -1,7 +1,7 @@
-package com.zz4955.ehcache_springboot_ex.mapper;
+package com.zz4955.ehcache_springboot_ex2.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.zz4955.ehcache_springboot_ex.bean.Tasklog;
+import com.zz4955.ehcache_springboot_ex2.bean.Tasklog;
 import org.springframework.stereotype.Component;
 
 @Component
