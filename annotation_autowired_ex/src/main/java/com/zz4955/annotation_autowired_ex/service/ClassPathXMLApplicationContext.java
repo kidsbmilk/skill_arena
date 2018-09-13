@@ -73,7 +73,7 @@ public class ClassPathXMLApplicationContext {
         for(String beanName : sigletions.keySet()) {
             Object bean = sigletions.get(beanName);
             if(bean != null) {
-                this.methodAnnotation(bean);
+                this.propertyAnnotation(bean);
                 this.fieldAnnotation(bean);
             }
         }
@@ -82,7 +82,7 @@ public class ClassPathXMLApplicationContext {
     /**
      * 处理在set方法加入的注解
      */
-    public void methodAnnotation(Object bean) {
+    public void propertyAnnotation(Object bean) {
         try {
             // 获取其属性的描述
             PropertyDescriptor[] ps = Introspector.getBeanInfo(bean.getClass()).getPropertyDescriptors();
@@ -101,8 +101,8 @@ public class ClassPathXMLApplicationContext {
                         value = sigletions.get(name);
                     } else { // 如果当前注解没有指定name属性，则根据类型进行匹配
                         for(String key : sigletions.keySet()) {
-                            // 判断当前属性所性的类型是否在配置文件中存在
-                            if(propertyDescriptor.getPropertyType().isAssignableFrom(sigletions.get(key).getClass())) {
+                            // 判断当前属性所属的类型是否在配置文件中存在
+                            if(propertyDescriptor.getPropertyType().isAssignableFrom(sigletions.get(key).getClass())) { // 在我们这个例子中，getPropertyType()返回的是User1DaoImpl这个类。
                                 // 获取类型匹配的实例对象
                                 value = sigletions.get(key);
                                 break;
