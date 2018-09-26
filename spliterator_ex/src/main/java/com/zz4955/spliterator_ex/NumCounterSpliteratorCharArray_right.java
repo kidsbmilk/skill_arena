@@ -7,6 +7,10 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 // JAVA8 stream 中Spliterator的使用(二)：http://ifeve.com/java8-stream-%E4%B8%ADspliterator%E7%9A%84%E4%BD%BF%E7%94%A8%E4%BA%8C/
+
+// 待看文章：
+// https://docs.oracle.com/javase/8/docs/api/java/util/Spliterator.html
+// Introduction to Spliterator in Java：https://www.baeldung.com/java-spliterator
 public class NumCounterSpliteratorCharArray_right implements Spliterator<Character> {
 
     private char[] str;
