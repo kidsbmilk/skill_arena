@@ -2,10 +2,7 @@ package com.zz4955.ehcache_springboot_ex2.controller.wilkt;
 
 import com.jcraft.jsch.*;
 import com.zz4955.ehcache_springboot_ex2.tool.wilkt.MyUserInfo;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.util.Arrays;
@@ -34,6 +31,7 @@ public class CommandController {
      * 当用户扫描登录后或者输入密码后，我也要在前端中展示登录成功信息，这个需要前端配合，前端等待服务器端给它发信息（前端主动轮询或者服务器端主动推送），
      * 服务器端需要开一个后台线程去查看ssh连接是否有登录成功的消息到来。
      */
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/start")
     public String start() throws JSchException, IOException, InterruptedException {
         session = jSch.getSession("zhangzhen5", "relay.xiaomi.com");
@@ -46,14 +44,17 @@ public class CommandController {
         in = new BufferedReader(new InputStreamReader(inputStream));
         outputStream.write("\r\n".getBytes());
         outputStream.flush();
-        return solveSshRead(2);
+        String stp = solveSshRead(2);
+        return stp.substring(7);
     }
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/getLoginSuccessInfo")
     public String getLoginSuccessInfo() throws IOException, InterruptedException {
         return solveSshRead(1);
     }
 
+    @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "exec")
     public String exec(@RequestParam("cmd") String cmd) throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
