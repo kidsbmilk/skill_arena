@@ -51,7 +51,8 @@ public class CommandController {
     @CrossOrigin
     @RequestMapping(method = RequestMethod.GET, value = "/getLoginSuccessInfo")
     public String getLoginSuccessInfo() throws IOException, InterruptedException {
-        return solveSshRead(1);
+        String temp = solveSshRead(1);
+        return temp;
     }
 
     @CrossOrigin
