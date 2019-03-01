@@ -10,8 +10,9 @@ import org.apache.spark.sql.DataFrame
   */
 
 // TODO: db包下的类未做详细测试
+// TODO: 我在jupyter notebook + livy上试了下，Test里的例子运行不成功，读取mysql2mysql.conf成功，创建数据表也成功，但是写入不了数据。需要调试一下。
 package object db {
-    
+
     import net.ceedubs.ficus.Ficus._
     import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 

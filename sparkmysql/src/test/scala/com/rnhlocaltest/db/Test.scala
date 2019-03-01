@@ -32,7 +32,7 @@ object Test {
 
 
         val insertDF = Seq(User(1, "ls", "lsppp"), User(2, "pp", "pppuu"))
-                .toDF("id", "account", "passwd")
+                .toDF("id", "name", "password")
 
         JdbcUtil.saveToPG("my_user", JdbcSaveMode.Upsert)(insertDF)
 
