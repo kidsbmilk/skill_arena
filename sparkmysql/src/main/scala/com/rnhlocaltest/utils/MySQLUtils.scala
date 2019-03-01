@@ -15,6 +15,8 @@ import org.apache.spark.sql.{DataFrame, SQLContext}
   */
 
 // TODO: 一些错误信息用的是println输出的，需要改为输出到日志里，并且错误信息要聚合，返回给调用者。
+// TODO: 尽管是插入，但是最后面那个更新位不能省，要不然拼接的sql不对，执行不成功，这点也是需要再优化的地方
+// TODO: 如果不存在时，执行删除操作也会返回true，其实应该返回被删除的条目数比较合适，这点也是需要再优化的地方
 object MySQLUtils {
     // 测试环境就写死吧，方便通过jupyter notebook + livy + spark调试程序。
     // 如果这里不写死的话，foreachPartition里会因为没有这些配置信息而得不到数据库链接，而传递这些参数到不同的集群节点又太麻烦了。
